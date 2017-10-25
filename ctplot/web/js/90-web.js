@@ -695,7 +695,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     function addPlotToSaved(settings) {
         console.debug('* add plot to saved');
         var plotImg = $('<img src="' + settings.url + '" href="' + settings.url + '" title="' + settings.t + '" class="savedPlotImage">'),
-            delBtn = $('<i class="del-btn inverse"></i>').attr('title', 'Plot löschen'),
+            delBtn = $('<i class="del-btn inverse"></i>').attr('title', 'Diagramm löschen'),
             loadBtn = $('<i class="fa fa-repeat fa-2x icon-green"></i>').attr('title', 'Plot laden'),
             btnContainer = $('<span class="btns">');
 
@@ -771,7 +771,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             result = $('#result');
             
             // print status information
-            result.empty().append('<p class="text-centered">Plot wird erstellt, bitte warten&hellip;<br /><br /><img src="img/bar90.gif"></p>');
+            result.empty().append('<p class="text-centered">Diagramm wird erstellt, bitte warten&hellip;<br /><br /><img src="img/bar90.gif"></p>');
             $('#error').empty();
 
             // scroll to plot section
@@ -833,7 +833,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     /* container for saveButton and image links */
                     container = $('<fieldset class="actions">').appendTo(result);
-                    $('<legend>Plot</legend>').appendTo(container);
+                    $('<legend>Diagramm</legend>').appendTo(container);
                     left = $('<div class="left">').appendTo(container);
                     left.append('Diagramm herunterladen als:');
                     right = $('<div class="right">').appendTo(container);
@@ -881,16 +881,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     // $('<img>').attr('src', 'img/disk.png').prependTo(saveButton);
 
                     // plot settings
-                    container.append('<h2>Einstellungen dieses Plots</h2>');
-                    container.append('<p>Um diesen Plot in eine andere Session zu importieren, speichere die folgenden Einstellungen und lade sie in <a class="scrollto" href="#loadsettings">die andere Session</a>.</p>');
+                    container.append('<h2>Einstellungen dieses Diagramms</h2>');
+                    container.append('<p>Um dieses Diagramm in eine andere Session zu importieren, speichere die folgenden Einstellungen und lade sie in <a class="scrollto" href="#loadsettings">die andere Session</a>.</p>');
                     jsonSettings = JSON.stringify(settings);
                     p = $('<p>').appendTo(container);
                     $('<textarea id="plotsettings">').text(jsonSettings).appendTo(p);
 
                     // plot url
-                    container.append('<h2>Diesen Plot auf einer Webseite einbinden</h2>');
-                    container.append('<p>Der folgende HTML-Code kann benutzt werden um den Plot auf einer Webseite einzubinden.</p>');
-
+                    container.append('<h2>Dieses Diagramm auf einer Webseite einbinden</h2>');
+                    container.append('<p>Der folgende HTML-Code kann benutzt werden um das Diagramm auf einer Webseite einzubinden.</p>');
                     // strip stuff like /index.html from current url and append plot url
                     var currentUrl = window.location.href;
                     plotUrl = currentUrl.substr(0, currentUrl.lastIndexOf('/')) + '/plot?' + query.replace(/a=plot/, 'a=png');
@@ -968,4 +967,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
 
 })(jQuery);
-
