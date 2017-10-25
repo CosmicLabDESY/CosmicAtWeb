@@ -34,18 +34,19 @@
 	<script src="js/50-colorpicker.js"></script>
 	<script src="js/90-web_en.js"></script>
 	<script src="js/99-tutorial.js"></script>
+	<!-- <script src="js/99-tutorial_en.js"></script>  -->
     </head>
     <body>
-        <!--
+
     	<div class="popup-background" style="display: none;">
 		<div class="popup">
-			Möchtest du das Tutorial starten? <br /> Es hilft dir beim Einstieg und nimmt maximal 5-10  Minuten deiner Zeit in Anspruch.
+		  Do you want to start the tutorial? <br /> It takes only 5-10 minutes of your time.
 			<div class="buttonwrapper">
 				<button class="startTutorial" autofocus onclick="$('.popup-background').hide();">
-					Ja
+					Yes
 				</button>
 				<button onclick="stopTutorial();">
-					Nein
+					No
 				</button>
 			</div>
 		</div>
@@ -69,7 +70,7 @@
 			<p id="task"></p>
 		</div>
 	</div>
-        -->
+
 	<header>
 	    <img src="img/cosmiclab.png" alt="COSMICLAB" />
 	</header>
@@ -108,7 +109,7 @@
 	        </div>
 	        <p>
 	          <a class="internal-link" href="https://physik-begreifen-zeuthen.desy.de/angebote/kosmische_teilchen/cosmicweb" target="_blank">
-	            More informations about Cosmic@Web
+	            More information about Cosmic@Web
 	          </a>
 	        </p>		    
 	        <p>
@@ -173,7 +174,7 @@
 	                        <label data-help="Value shown at the y-axis , analogously to x" class="required t-xy t-h2 t-p t-map">y-Variable
 	                            <select name="y*"></select>
 	                        </label>
-	                        <label data-help="Correction function for the y-variable, e.g. to display pressure corrected rate" class="t-xy t-h2 t-map t-p expert">Correction Funktion for y-Variable
+	                        <label data-help="Correction function for the y-variable, e.g. to display pressure corrected rate" class="t-xy t-h2 t-map t-p expert">Correction Function for y-Variable
 	                            <input type="text" name="y*a">
 	                        </label>
 	                        <label data-help="Binning of the y-axis, analogously to x-bins" class="t-h2 advanced">Number of y-Bins
@@ -295,7 +296,7 @@
 	                                <option value="." selected="selected">Point</option>
 	                                <option value="o">Circle</option>
 	                                <option value="*">Star</option>
-	                                <option value="s">Quadrat</option>
+	                                <option value="s">Square</option>
 	                                <option value="+">Plus</option>
 	                                <option value="x">Cross</option>
 	                                <option value="^">Triangle</option>
@@ -380,14 +381,14 @@
 	                    <label  class="advanced" data-help="Caption of y-axis">Caption
 	                        <input type="text" name="yl">
 	                    </label>
-	                    <label class="advanced" data-help="Lower edge of y-axis">Start Value y
+	                    <label class="advanced" data-help="Lower edge of y-axis">Start Value
 	                        <input type="text" name="yr-min">
 	                    </label>
-	                    <label class="advanced" data-help="Upper edge of y-axis">Maximum Value y 
+	                    <label class="advanced" data-help="Upper edge of y-axis">Maximum Value
 	                        <input type="text" name="yr-max">
 	                    </label>
 	                    <input type="hidden" name="yr">
-	                    <label class="advanced" data-help="Scaling of y-axis">Scaling y
+	                    <label class="advanced" data-help="Scaling of y-axis">Scaling
 	                        <select name="ys">
 	                            <option value="linear">linear</option>
 	                            <option value="log">logarithmisch</option>
@@ -417,14 +418,14 @@
 	                    <label class="advanced" data-help="Caption of z-axis (color)">Caption z
 	                        <input type="text" name="zl">
 	                    </label>
-	                    <label class="advanced" data-help="Lower edge of z-axis">Start Value z
+	                    <label class="advanced" data-help="Lower edge of z-axis">Start Value
 	                        <input type="text" name="zr-min">
 	                    </label>
-	                    <label class="advanced" data-help="Upper edge of z-axis">Maximum Value z
+	                    <label class="advanced" data-help="Upper edge of z-axis">Maximum Value
 	                        <input type="text" name="zr-max">
 	                    </label>
 	                    <input type="hidden" name="zr">
-	                    <label class="advanced" data-help="Scaling of z-axis (colored axis)">Scaling z
+	                    <label class="advanced" data-help="Scaling of z-axis (colored axis)">Scaling
 	                        <select name="zs">
 	                            <option value="linear">linear</option>
 	                            <option value="log">logarithmisch</option>
@@ -438,12 +439,12 @@
 	                            <option value="upper left">top left</option>
 	                            <option value="upper center">top center </option>
 	                            <option value="upper right">top right</option>
-	                            <option value="center left"><center left/option>
+	                            <option value="center left">center left</option>
 	                            <option value="center">center</option>
-	                            <option value="center right"><center right/option>
-	                            <option value="lower left">below left</option>
-	                            <option value="lower center">below center</option>
-	                            <option value="lower right">below right</option>
+	                            <option value="center right">center right</option>
+	                            <option value="lower left">bottom left</option>
+	                            <option value="lower center">bottom center</option>
+	                            <option value="lower right">bottom right</option>
 	                        </select> </label>
 	                </fieldset>
 	                <div class="buttons">
@@ -473,7 +474,7 @@
 	            <p>
 	                You can load stored diagrams and their settings clicking on:
 			<i class="fa fa-repeat fa-lg icon-green"></i>. Clicking on 
-	                <i class="del-btn inverse text"></i> the diagram will be killed.  
+	                <i class="del-btn inverse text"></i> the diagram will be removed.  
 	                Clicking on the diagram will diplay it in full size.
 	            </p>
 	            <p id="nosavedplots">
@@ -529,7 +530,7 @@
 			</p>
                     <h1>Example Diagrams</h1>
                     <p>
-		      To load the example diagrams given in the manual for each experiment, choose on of the following Session-ID's:
+		      To load the example diagrams given in the manual for each experiment, choose one of the following Session-ID's:
 		    </p>  
                     <ul>
                      <li>Trigger-Hodoskop</li>
