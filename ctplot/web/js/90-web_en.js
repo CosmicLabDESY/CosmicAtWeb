@@ -835,7 +835,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     container = $('<fieldset class="actions">').appendTo(result);
                     $('<legend>Diagram</legend>').appendTo(container);
                     left = $('<div class="left">').appendTo(container);
-                    left.append('Load Diagram as:');
+                    left.append('Save Diagram as:');
                     right = $('<div class="right">').appendTo(container);
                     list = $('<ul id="downloadButtons">').appendTo(left);
                     el = $('<li>').appendTo(list);
@@ -890,7 +890,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     // plot url
                     container.append('<h2>Include this Diagram into a Website</h2>');
                     container.append('<p>The following HTML-Code can be used to include the Diagram into a Website.</p>');
-
                     // strip stuff like /index.html from current url and append plot url
                     var currentUrl = window.location.href;
                     plotUrl = currentUrl.substr(0, currentUrl.lastIndexOf('/')) + '/plot?' + query.replace(/a=plot/, 'a=png');
@@ -968,4 +967,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
 
 })(jQuery);
-
