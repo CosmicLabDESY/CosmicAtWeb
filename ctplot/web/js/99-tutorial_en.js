@@ -369,14 +369,17 @@ function startTutorial(){
 		}
 	});
 
-	$.get('frames_en.html',"", function(data) {
-		var parser = new DOMParser();
-		var xmlDoc = parser.parseFromString(data,"text/xml");
-		frameData = $(xmlDoc);
-		frameDataLoaded = true;
-		frameQuantity = frameData.find('frame').length;
-		defaultData = frameData.find('default');
-	},'html');
+	$.ajax('frames_en.html', {
+		success: function(data) {
+      var parser = new DOMParser();
+      var xmlDoc = parser.parseFromString(data,"text/xml");
+      frameData = $(xmlDoc);
+      frameDataLoaded = true;
+      frameQuantity = frameData.find('frame').length;
+      defaultData = frameData.find('default');
+    },
+		cache: false
+  });
 
 	ctx = document.getElementById("overlay").getContext("2d");
 	drawNewFrame();
