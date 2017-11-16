@@ -833,10 +833,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     /* container for saveButton and image links */
                     container = $('<fieldset class="actions">').appendTo(result);
-                    $('<legend>Diagramm</legend>').appendTo(container);
+                    $('<legend>Diagramm Speichern</legend>').appendTo(container);
                     left = $('<div class="left">').appendTo(container);
-                    left.append('Diagramm herunterladen als:');
-                    right = $('<div class="right">').appendTo(container);
+                    left.append('Diagramm kann auf dem eigenen PC gespeichert werden als:');
+                    //mw: right = $('<div class="right">').appendTo(container);
                     list = $('<ul id="downloadButtons">').appendTo(left);
                     el = $('<li>').appendTo(list);
 
@@ -862,6 +862,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         .prepend('<i class="fa fa-file-image-o"></i>')
                         .appendTo(el);
 
+                    right = $('<div class="right">').appendTo(container);
+                    right.append('Und unter der Session-ID (siehe unten) auf dem Server:');
                     // save plot button
                     saveButton = $('<button>').attr('type', 'button')
                         .addClass('btn')
@@ -877,6 +879,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         checkSavedPlotsAvail();
                         $('nav a[href="#saved"]').click();
                     }).appendTo(right);
+                   
 
                     // $('<img>').attr('src', 'img/disk.png').prependTo(saveButton);
 
@@ -967,3 +970,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
 
 })(jQuery);
+
+
