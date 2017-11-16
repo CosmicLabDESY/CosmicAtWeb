@@ -134,7 +134,7 @@
 	          </a>
 	        </p>
 	        <div id="settings">
-	            <h1>Einstellungen für das Diagramm</h2>
+	            <h1>Einstellungen für das Diagramm</h1>
 	            <form>
 	                <input type="hidden" name="plots" id="plotcount" value>
 	                <fieldset class="global">
@@ -474,7 +474,7 @@
 	            </form>
 	        </div>
 	        <div id="output">
-	            <h1>Diagramm</h2>
+	            <h1>Diagramm</h1>
 	            <div id="result">
 	                <p>
 	                    Bitte unter <a href="#settings">Einstellungen</a> ein
@@ -484,36 +484,13 @@
 	            </div>
 	            <div id="error"></div>
 	        </div>
-	        <div id="saved">
-	            <h1>Gespeicherte Diagramme</h1>
-	            <p>
-	                Gespeicherte Diagramme und ihre Einstellungen können
-	                mit einem Klick auf <i class="fa fa-repeat fa-lg icon-green"></i> 
-	                geladen und auf <i class="del-btn inverse text"></i> gelöscht
-	                werden. Ein Klick auf das Bild, vergrößert es.
-	            </p>
-	            <p id="nosavedplots">
-	                Momentan existieren keine gespeicherten Diagramme.
-	            </p>
-	            <div id="savedplots"></div>
-	        </div>
-	        <div id="loadsettings">
-	            <h1>Einstellungen laden</h1>
-	            <p>
-	                Zum Laden von gespeicherten Einstellungen, die Einstellungen in dieses Feld kopieren und laden.
-	            </p>
-	            <p>
-	                <textarea name="settingstoload"></textarea>
-	            </p>
-	            <p>
-	                <button class="btn" type="button" name="load">
-	                  <i class="fa fa-upload"></i> 
-	                  Einstellungen laden
-	                </button>
-	            </p>
-	        </div>
-	        <div id="session">
-	            <h1>Session ID</h1>
+
+	         
+  	           <div id="session">
+	            <fieldset>
+	             <legend>
+	               Session ID
+	             </legend>
 			<p>
 			Die in dieser Session gewählten Einstellungen und das dazugehörige Diagramm können auf dem Server mittels der Session-ID gespeichert und wieder aufgerufen werden.
 			</p>
@@ -529,18 +506,60 @@
 	                  Session laden
 	                </button>
 			<p>
-						Es kann auch eine Session-ID selbst gewählt werden. Trage dazu im Feld mindestens 8 Zeichen ein und klicke auf 'Session Laden'.
+			Es kann auch eine Session-ID selbst gewählt werden. Trage dazu im Feld mindestens 8 Zeichen ein und klicke auf 'Session Laden'.
 			</p>
 			<p>
-						Möchtest du ein Diagramm zu einer Session speichern, klicke auf den Button „Zu gespeicherte Diagramme hinzufügen“.
+			Möchtest du ein Diagramm zu einer Session speichern, klicke auf den Button „Zu gespeicherte Diagramme hinzufügen“.
 			</p>
 			<p>
-						Merke oder speichere dir nun die Session-ID für die spätere Arbeit damit.
+			Merke dir die Session-ID für die spätere Arbeit damit.
 			</p>
+	            </fieldset>
+                   </div>
+
+	           <div id="saved">
+	            <fieldset>
+	              <legend>
+			Gespeicherte Diagramme laden
+	              </legend>
 			<p>
-						Wenn du eine Session laden willst, klicke auf Session laden. Wähle dann ein Diagramm aus. Um die Einstellungen zum Diagramm einzusehen oder zu bearbeiten, klicke auf den grünen Pfeil.
+	                Gespeicherte Diagramme und ihre Einstellungen können
+	                mit einem Klick auf <i class="fa fa-repeat fa-lg icon-green"></i> 
+	                geladen und auf <i class="del-btn inverse text"></i> gelöscht
+	                werden. Ein Klick auf das Bild, vergrößert es.
 			</p>
-                    <h1>Beispiel-Diagramme</h1>
+			<p id="nosavedplots">
+	                  Momentan existieren keine gespeicherten Diagramme.
+			</p>
+			<div id="savedplots"></div>
+       	            </fieldset>
+   	           </div>
+
+	        <div id="loadsettings">
+	         <fieldset>
+	            <legend>
+	            Einstellungen laden
+	            </legend>
+	            <p>
+	            Zum Laden von gespeicherten Diagramm-Einstellungen, müssen sie in dieses Feld kopiert und dann geladen werden.
+	            </p>
+	            <p>
+	                <textarea name="settingstoload"></textarea>
+	            </p>
+	            <p>
+	                <button class="btn" type="button" name="load">
+	                  <i class="fa fa-upload"></i> 
+	                  Einstellungen laden
+	                </button>
+	            </p>
+	         </fieldset>
+	        </div>
+
+	        <div id="session">
+	         <fieldset>
+	            <legend>
+                    Beispiel-Diagramme
+	            </legend>
                     <p>
 		      Wenn man die in der Anleitung zu jedem Experiment aufgeführten Beispiel-Diagramme laden möchte, dann muss eine der folgenden Session-ID's eingegeben werden:  
 		    </p>  
@@ -552,11 +571,20 @@
 		     <li>Neumayer</li>
 		     <li>Wetterdaten-Zeuthen</li>
                     </ul>
-		    <p> 
-		      Anschliessend ein Klick auf 'Session laden'. Diese Beispiel-Diagramme können beliebig modifiziert werden, müssen aber unter einer neuen (eigenen) Session-ID abgespeichert werden, sonst gibt es eine Fehlermeldung.  
-		    </p>
 
+                    <label>Experiment
+	             <input type="text" id="sessionid">
+	            </label>
+	            <button class="btn" type="button" id="loadid">
+	             <i class="fa fa-upload"></i> 
+	              Diagramm laden
+	            </button>
+		    <p> 
+		      Anschliessend ein Klick auf 'Diagramm laden'. Diese Beispiel-Diagramme können beliebig modifiziert werden, müssen aber unter einer neuen (eigenen) Session-ID abgespeichert werden.
+		    </p>
+	         </fieldset>
 	        </div>
+
 	    </div>
 	    <footer>
 	        &copy; 2010 &ndash; 2017, Deutsches Elektronen-Synchrotron
