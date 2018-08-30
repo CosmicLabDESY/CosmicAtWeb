@@ -21,10 +21,10 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-	<link rel="stylesheet" type="text/css" href="colorpicker.css" />
-	<link rel="stylesheet" type="text/css" href="colorbox.css" />
-	<link rel="stylesheet" type="text/css" href="style.css" />
-	<link rel="stylesheet" type="text/css" href="tutorial.css" />
+	<link rel="stylesheet" type="text/css" href="css/colorpicker.css" />
+	<link rel="stylesheet" type="text/css" href="css/colorbox.css" />
+	<link rel="stylesheet" type="text/css" href="css/style.css" />
+	<link rel="stylesheet" type="text/css" href="css/tutorial.css" />
 	<script src="js/00-browser-update.js"></script>
 	<script src="js/05-jquery.js"></script>
 	<script src="js/10-jquery.smooth-scroll.js"></script>
@@ -33,8 +33,8 @@
 	<script src="js/40-simplestorage.js"></script>
 	<script src="js/50-colorpicker.js"></script>
 	<script src="js/90-web_en.js"></script>
-	<script src="js/99-tutorial.js"></script>
-	<!-- <script src="js/99-tutorial_en.js"></script>  -->
+	<!-- <script src="js/99-tutorial.js"></script>  -->
+	<script src="js/99-tutorial_en.js"></script>
     </head>
     <body>
 
@@ -95,14 +95,13 @@
 			  This browser does not support JavaScript or JavaScript is not activated
 	                </p>
 	                <p>
-	                    You must activate JavaScript or use <a
+	                     <a
 	                    href="http://www.google.com/chrome" target="_blank">Chrome</a>).
 	                </p>
 	            </div>
 	        </noscript>
 	        <div id="browser-warning" class="errorbox">
-	            This webinterface is optimized for Mozilla Firefox and
-	            Chrome. For other browsers a full functionality is not guaranteed!
+
 	        </div>
 		<div align="right">
 	            Language: <b>English</b> / <a href="index.html">German</a>
@@ -119,11 +118,11 @@
 	        </p>
 	        <p>
 	          <a class="internal-link startTutorial" href="#">
-	            Start Tutorial, (still in German)
+	            Start Tutorial
 	          </a>
 	        </p>
 	        <div id="settings">
-	            <h1>Diagram Creation</h2>
+	            <h1>Diagram Creation</h1>
 	            <form>
 	                <input type="hidden" name="plots" id="plotcount" value>
 	                <fieldset class="global">
@@ -195,7 +194,7 @@
 	                        <label data-help="Correction function of the z-variable" class="t-xy t-map expert">Correction Function for z-Variable
 	                            <input type="text" name="z*a">
 	                        </label>
-	                        <h2 class="advanced">Data Analysis</h2>
+	                        <h2 class="advanced"></h2>
 	                        <h3 class="advanced" >Data Reduction</h3>
 
 	                        <label class="advanced" data-help="Data selection/reduction with help of a boolean condition. Only data for which the condition is true will be displayed, (e.g. T_a&gt;20 means that all data are cut for which this condition is not fulfilled.">Condition

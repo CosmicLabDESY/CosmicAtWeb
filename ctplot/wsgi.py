@@ -5,13 +5,14 @@ import os, json, random, string, logging
 from numbers import Number
 from os.path import join, abspath, basename
 from mimetypes import guess_type
-from time import  time
+from time import time
 from cgi import FieldStorage
 from threading import Lock
-from pkg_resources import resource_string, resource_exists, resource_isdir, resource_listdir
+from pkg_resources import resource_string, resource_isdir
 from itertools import product
 
 import matplotlib
+
 matplotlib.use('Agg')  # headless backend
 
 import plot
@@ -19,11 +20,12 @@ import validation
 from utils import hashargs
 from i18n import _
 
-logging.basicConfig(level = logging.DEBUG, format = '%(filename)s:%(funcName)s:%(lineno)d:%(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(filename)s:%(funcName)s:%(lineno)d:%(message)s')
 
 log = logging.getLogger('wsgi')
 
 _config = None
+
 
 def get_config():
     global _config
@@ -36,10 +38,10 @@ def get_config():
     basekey = (prefix + 'basedir').upper()
     basedir = abspath(env[basekey] if basekey in env else 'data')
 
-    _config = {'cachedir':join(basedir, 'cache'),
-               'datadir':join(basedir, 'data'),
-               'plotdir':join(basedir, 'plots'),
-               'sessiondir':join(basedir, 'sessions')}
+    _config = {'cachedir': join(basedir, 'cache'),
+               'datadir': join(basedir, 'data'),
+               'plotdir': join(basedir, 'plots'),
+               'sessiondir': join(basedir, 'sessions')}
 
     for k in _config.keys():
         ek = prefix + k.upper()
@@ -51,6 +53,7 @@ def get_config():
     log.debug('config: {}'.format(_config))
 
     return _config
+
 
 def getpath(environ):
     return environ['PATH_INFO'] if 'PATH_INFO' in environ else ''
@@ -66,15 +69,17 @@ def application(environ, start_response):
     else:
         return static_content(environ, start_response)
 
+
 # http://www.mobify.com/blog/beginners-guide-to-http-cache-headers/
 # http://www.mnot.net/cache_docs/
 # http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+
+
 cc_nocache = 'Cache-Control', 'no-cache, max-age=0'
-cc_cache = 'Cache-Control', 'public, max-age=86400'
+#cc_cache = (cc_nocache if _config['debug'] else ('Cache-Control', 'public, max-age=86400'))
+cc_cache = cc_nocache
 
-
-
-def content_type(path = ''):
+def content_type(path=''):
     mime_type = None
 
     if path:
@@ -93,29 +98,20 @@ def static_content(environ, start_response):
         start_response('301 Redirect', [content_type(), ('Location', environ['REQUEST_URI'] + '/')])
         return []
 
-    if path == '/':
-        path = 'web/index.html'  # map / to index.html
+    path = path[1:]  # get rid of beginning slash
+
+    if path == '':
+        path = 'de'  # map / to /de
+
+    if path in ['en', 'de']:
+        start_response('200 OK', [('Content-Type', 'text/html')])
+        return resource_string('ctplot', 'static/' + path + '/index.html')
+    elif path.startswith('img/') and not resource_isdir('ctplot', 'static/' + path):
+        start_response('200 OK', [content_type()])
+        return resource_string('ctplot', 'static/' + path)
     else:
-        path = ('web/' + path).replace('//', '/')
-
-    if path == 'web/js':  # combined java scripts
-        scripts = {}
-        for s in resource_listdir('ctplot', 'web/js'):
-            scripts[s] = '\n// {}\n\n'.format(s) + resource_string('ctplot', 'web/js/' + s)
-        start_response('200 OK', [content_type('combined.js'), cc_cache])
-        return [scripts[k] for k in sorted(scripts.keys())]
-
-    if not resource_exists('ctplot', path):  # 404
         start_response('404 Not Found', [content_type()])
         return ['404\n', '{} not found!'.format(path)]
-
-    elif resource_isdir('ctplot', path):  # 403
-        start_response('403 Forbidden', [content_type()])
-        return ['403 Forbidden']
-    else:
-        start_response('200 OK', [content_type(path), cc_cache])
-        return resource_string('ctplot', path)
-
 
 
 def dynamic_content(environ, start_response):
@@ -126,7 +122,6 @@ def dynamic_content(environ, start_response):
         return serve_plot(path, start_response, config)
     else:
         return handle_action(environ, start_response, config)
-
 
 
 def serve_plot(path, start_response, config):
@@ -144,12 +139,14 @@ def serve_plain(data, start_response):
     start_response('200 OK', [content_type(), cc_nocache])
     return [data]
 
+
 available_tables = None
+
 
 def validate_settings(settings):
     global available_tables
 
-    errors = { 'global': [], 'diagrams': {} }
+    errors = {'global': [], 'diagrams': {}}
     valid = True
 
     try:
@@ -179,65 +176,65 @@ def validate_settings(settings):
 
         # experiment
         v.add('experiment' + n, validation.NotEmpty(),
-            stop_on_error=True,
-            title=_('experiment'))
+              stop_on_error=True,
+              title=_('experiment'))
 
         # diagram type
         v.add('m' + n, validation.Regexp('^' + m0 + '$',
-            regexp_desc=_("diagram type of the first dataset")),
-            stop_on_error=True,
-            title=_('diagram type'))
+                                         regexp_desc=_("diagram type of the first dataset")),
+              stop_on_error=True,
+              title=_('diagram type'))
 
         diagram_type = settings['m' + n]
 
         # dataset
         v.add('s' + n, validation.NotEmpty(),
-            stop_on_error=True,
-            title=_('dataset'))
+              stop_on_error=True,
+              title=_('dataset'))
 
         # x axis
         v.add('x' + n, validation.NotEmpty(),
-            title=_('x-variable'))
+              title=_('x-variable'))
 
         # y axis
         if diagram_type in ['xy', 'h2']:
             v.add('y' + n, validation.NotEmpty(),
-                title=_('y-variable'))
+                  title=_('y-variable'))
 
         # map only works on valid geo coords
         if diagram_type == 'map':
             v.add('x' + n, [validation.NotEmpty(),
-                validation.Regexp('^(lat|lon)',
-                    regexp_desc=_("latitude or longitude"))
-            ],
-            title=_('x-variable'))
+                            validation.Regexp('^(lat|lon)',
+                                              regexp_desc=_("latitude or longitude"))
+                            ],
+                  title=_('x-variable'))
 
             v.add('y' + n, [validation.NotEmpty(),
-                validation.Regexp('^(lat|lon)',
-                    regexp_desc=_('latitude or longitude'))
-            ],
-            title=_('y-variable'))
+                            validation.Regexp('^(lat|lon)',
+                                              regexp_desc=_('latitude or longitude'))
+                            ],
+                  title=_('y-variable'))
 
         # binning
         if diagram_type in ['h1', 'p']:
             # x-bins
             v.add('x' + n + 'b',
-                validation.Regexp('^(\s*[+]?[0-9]*\.?' +
-                    '[0-9]+\s*,)*(\s*[+]?[0-9]*\.?[0-9]+\s*)$',
-                    allow_empty=True,
-                    regexp_desc=_('comma-separated list of positive floating point numbers')),
-                title=_('x-bins count'))
+                  validation.Regexp('^(\s*[+]?[0-9]*\.?' +
+                                    '[0-9]+\s*,)*(\s*[+]?[0-9]*\.?[0-9]+\s*)$',
+                                    allow_empty=True,
+                                    regexp_desc=_('comma-separated list of positive floating point numbers')),
+                  title=_('x-bins count'))
 
         if diagram_type == 'h2':
             # x-bins
             v.add('x' + n + 'b', [validation.Float(allow_empty=True),
-                    validation.Gte(1, allow_empty=True)],
-                title=_('x-bins count'))
+                                  validation.Gte(1, allow_empty=True)],
+                  title=_('x-bins count'))
 
             # y-bins
             v.add('y' + n + 'b', [validation.Float(allow_empty=True),
-                    validation.Gte(1, allow_empty=True)],
-                title=_('y-bins count'))
+                                  validation.Gte(1, allow_empty=True)],
+                  title=_('y-bins count'))
 
         # get permitted expression variables
         permitted_vars = None
@@ -255,36 +252,36 @@ def validate_settings(settings):
         # x/y/z adjustment function
         for ax in 'xyz':
             v.add(ax + n + 'a',
-                validation.Expression(
-                    transform=False,
-                    args=permitted_vars,
-                    return_type=Number
-                ),
-                title=_('adjustment function for %(axis)s-variable') % { 'axis': ax })
+                  validation.Expression(
+                      transform=False,
+                      args=permitted_vars,
+                      return_type=Number
+                  ),
+                  title=_('adjustment function for %(axis)s-variable') % {'axis': ax})
 
         # data reduction
         # condition
         v.add('c' + n,
-            validation.Expression(
-                transform=False,
-                args=permitted_vars,
-                return_type=bool
-            ),
-            title=_('condition'))
+              validation.Expression(
+                  transform=False,
+                  args=permitted_vars,
+                  return_type=bool
+              ),
+              title=_('condition'))
 
         # rate calculation
         # interval
         v.add('rw' + n, validation.Float(allow_empty=True),
-            title=_('time interval'))
+              title=_('time interval'))
 
         # push
         v.add('rs' + n, validation.FloatRange(0, 1, exclude_min=True,
-            allow_empty=True), title=_('push'))
+                                              allow_empty=True), title=_('push'))
 
         # weight
         v.add('rc' + n,
-            validation.Expression(transform=False, args=permitted_vars),
-            title=_('weight'))
+              validation.Expression(transform=False, args=permitted_vars),
+              title=_('weight'))
 
         # fit validation
         if diagram_type in ['xy', 'h1', 'p']:
@@ -298,54 +295,54 @@ def validate_settings(settings):
 
             # fit function validation with dummy value x = 1
             v.add('ff' + n,
-                validation.Expression(
-                    transform=False,
-                    args={ 'x': 1, 'p': fp },
-                    return_type=Number
-                ),
-                title=_('fit function and/or parameters'))
+                  validation.Expression(
+                      transform=False,
+                      args={'x': 1, 'p': fp},
+                      return_type=Number
+                  ),
+                  title=_('fit function and/or parameters'))
 
             # fit linestyle
             v.add('fl' + n, validation.Regexp(
-                    '^([bgrcmykw]?(-|--|:|-.)?|(-|--|:|-.)?[bgrcmykw]?)$',
-                    regexp_desc=_('mathplotlib colors and linestyles')
-                ),
-                title=_('fit line style'))
+                '^([bgrcmykw]?(-|--|:|-.)?|(-|--|:|-.)?[bgrcmykw]?)$',
+                regexp_desc=_('mathplotlib colors and linestyles')
+            ),
+                  title=_('fit line style'))
 
         # statistics box validation
         if diagram_type in ['h1', 'h2']:
             v.add('sb' + n, validation.Regexp('^[nuomspewkxca]*$'),
-                title=_('statistics box'))
+                  title=_('statistics box'))
 
         # outline validation
         if diagram_type == 'h2':
             v.add('o' + n + 'levels', [validation.Int(allow_empty=True),
-                    validation.Gte(0, allow_empty=True)],
-                title=_('outlines'))
+                                       validation.Gte(0, allow_empty=True)],
+                  title=_('outlines'))
 
         # width, height and boundarylat
         if diagram_type == 'map':
             v.add('o' + n + 'width', [validation.Int(allow_empty=True),
-                    validation.Gte(1, allow_empty=True)],
-                title=_('detail width'))
+                                      validation.Gte(1, allow_empty=True)],
+                  title=_('detail width'))
 
             v.add('o' + n + 'height', [validation.Int(allow_empty=True),
-                    validation.Gte(1, allow_empty=True)],
-                title=_('detail height'))
+                                       validation.Gte(1, allow_empty=True)],
+                  title=_('detail height'))
 
             v.add('o' + n + 'boundarylat', validation.FloatRange(-90, 90,
-                    exclude_min=True, exclude_max=True, allow_empty=True),
-                title=_('boundary latitude for (N/S) polar'))
+                                                                 exclude_min=True, exclude_max=True, allow_empty=True),
+                  title=_('boundary latitude for (N/S) polar'))
 
         # diagram options
         if diagram_type != 'h2':
             # markersize
             v.add('o' + n + 'markersize', validation.Float(allow_empty=True),
-                title=_('marker size'))
+                  title=_('marker size'))
 
             # linewidth
             v.add('o' + n + 'linewidth', validation.Float(allow_empty=True),
-                title=_('line width'))
+                  title=_('line width'))
 
         valid = (v.validate() and valid)
         errors['diagrams'][n] = v.get_errors()
@@ -381,6 +378,7 @@ def validate_settings(settings):
 
 plot_lock = Lock()
 
+
 def make_plot(settings, config):
     basename = 'plot{}'.format(hashargs(settings))
     name = os.path.join(config['plotdir'], basename).replace('\\', '/')
@@ -400,12 +398,13 @@ def make_plot(settings, config):
             return [p.save(name), None]
 
 
-def randomChars(n):
+def random_chars(n):
     return ''.join(random.choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for _ in range(n))
+
 
 def handle_action(environ, start_response, config):
     global available_tables
-    fields = FieldStorage(fp = environ['wsgi.input'], environ = environ)
+    fields = FieldStorage(fp=environ['wsgi.input'], environ=environ)
     action = fields.getfirst('a')
     datadir = config['datadir']
     sessiondir = config['sessiondir']
@@ -415,16 +414,16 @@ def handle_action(environ, start_response, config):
         settings = {}
         for k in fields.keys():
             if k[0] in 'xyzcmsorntwhfglp' or k[:10] == 'experiment':
-                settings[k] = fields.getfirst(k).strip().decode('utf8', errors = 'ignore')
+                settings[k] = fields.getfirst(k).strip().decode('utf8', errors='ignore')
 
         try:
             images, errors = make_plot(settings, config)
         except Exception as e:
             log.exception(e)
-            errors = { 'global': [_('unknown error')] }
+            errors = {'global': [_('unknown error')]}
 
         if errors:
-            return serve_json({ 'errors': errors }, start_response)
+            return serve_json({'errors': errors}, start_response)
 
         for k, v in images.items():
             images[k] = 'plots/' + basename(v)
@@ -460,16 +459,10 @@ def handle_action(environ, start_response, config):
             return serve_json('no data for {}'.format(id), start_response)
 
     elif action == 'newid':
-        id = randomChars(16)
+        id = random_chars(16)
         while os.path.isfile(os.path.join(sessiondir, '{}.session'.format(id))):
-            id = randomChars(16)
+            id = random_chars(16)
         return serve_plain(id, start_response)
 
     else:
         raise ValueError('unknown action {}'.format(action))
-
-
-
-
-
-

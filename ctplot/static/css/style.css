@@ -24,7 +24,7 @@ body {
     font-size: 12px;
     margin: 0;
     padding: 0;
-    background: url(img/bg.jpg);
+    background: url(../img/bg.jpg);
 }
 
 noscript {
@@ -155,7 +155,7 @@ a.internal-link:focus {
 
 a.internal-link:before {
     content: "";
-    background-image: url(img/internal_link.gif);
+    background-image: url(../img/internal_link.gif);
     background-position: left center;
     background-repeat: no-repeat;
     width: 12px;
@@ -274,7 +274,7 @@ button img {
     -webkit-appearance: none;
        -moz-appearance: none;
             appearance: none;
-    background-image: url(img/select-arrow.png);
+    background-image: url(../img/select-arrow.png);
     background-repeat: no-repeat;
     background-position: right;
     background-size: 20px;
@@ -451,7 +451,7 @@ body.firefox .plot .delplot {
     left: -4px;
     width: 36px;
     height: 36px;
-    background: url(img/colorpicker/select2.png);
+    background: url(../img/colorpicker/select2.png);
 }
 
 .colorselector div {
@@ -460,7 +460,7 @@ body.firefox .plot .delplot {
     left: 4px;
     width: 28px;
     height: 28px;
-    background: url(img/colorpicker/select2.png) center;
+    background: url(../img/colorpicker/select2.png) center;
 }
 
 
