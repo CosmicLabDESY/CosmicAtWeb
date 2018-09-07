@@ -124,7 +124,6 @@ def dynamic_content(environ, start_response):
     path = getpath(environ)
     config = get_config()
 
-    # TODO readonly not generated
     if path.startswith('/plots'):
         return serve_plot(path, start_response, config)
     else:
