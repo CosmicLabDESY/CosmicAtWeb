@@ -5,7 +5,6 @@ import os, json, random, string, logging
 from numbers import Number
 from os.path import join, abspath, basename
 from mimetypes import guess_type
-from time import time
 from cgi import FieldStorage
 from threading import Lock
 from pkg_resources import resource_string, resource_isdir
@@ -19,6 +18,7 @@ import plot
 import validation
 from utils import hashargs
 from i18n import _
+from global_data import GlobalData
 
 logging.basicConfig(level=logging.DEBUG, format='%(filename)s:%(funcName)s:%(lineno)d:%(message)s')
 
@@ -63,6 +63,10 @@ def getpath(environ):
 # except when using mod_wsgi where it must be "application"
 # see http://webpython.codepoint.net/wsgi_application_interface
 def application(environ, start_response):
+    global global_data
+    if not global_data:
+        global_data = GlobalData(get_config()['datadir'])
+
     path = getpath(environ)
     if path == '/webplot.py' or path.startswith('/plot'):
         return dynamic_content(environ, start_response)
@@ -76,8 +80,10 @@ def application(environ, start_response):
 
 
 cc_nocache = 'Cache-Control', 'no-cache, max-age=0'
-#cc_cache = (cc_nocache if _config['debug'] else ('Cache-Control', 'public, max-age=86400'))
+# cc_cache = (cc_nocache if _config['debug'] else ('Cache-Control', 'public, max-age=86400'))
 cc_cache = cc_nocache
+global_data = GlobalData(get_config()['datadir'])
+
 
 def content_type(path=''):
     mime_type = None
@@ -105,19 +111,20 @@ def static_content(environ, start_response):
 
     if path in ['en', 'de']:
         start_response('200 OK', [('Content-Type', 'text/html')])
-        return resource_string('ctplot', 'static/' + path + '/index.html')
+        return resource_string('ctplot', 'static/%s/index.html' % path)
     elif path.startswith('img/') and not resource_isdir('ctplot', 'static/' + path):
-        start_response('200 OK', [content_type()])
+        start_response('200 OK', [content_type(path)])
         return resource_string('ctplot', 'static/' + path)
     else:
         start_response('404 Not Found', [content_type()])
-        return ['404\n', '{} not found!'.format(path)]
+        return ['404\n', '%s not found!' % path]
 
 
 def dynamic_content(environ, start_response):
     path = getpath(environ)
     config = get_config()
 
+    # TODO readonly not generated
     if path.startswith('/plots'):
         return serve_plot(path, start_response, config)
     else:
@@ -125,9 +132,13 @@ def dynamic_content(environ, start_response):
 
 
 def serve_plot(path, start_response, config):
-    with open(join(config['plotdir'], basename(path))) as f:
-        start_response('200 OK', [content_type(path), cc_cache])
-        return [f.read()]
+    try:
+        with open(join(config['plotdir'], basename(path))) as f:
+            start_response('200 OK', [content_type(path), cc_cache])
+            return [f.read()]
+    except IOError:
+        start_response('404 Not Found', [content_type()])
+        return ['404\n', '%s not found!' % path]
 
 
 def serve_json(data, start_response):
@@ -140,12 +151,7 @@ def serve_plain(data, start_response):
     return [data]
 
 
-available_tables = None
-
-
 def validate_settings(settings):
-    global available_tables
-
     errors = {'global': [], 'diagrams': {}}
     valid = True
 
@@ -161,9 +167,6 @@ def validate_settings(settings):
         if pc == 0:
             errors['global'].append(_('no plots detected'))
             return [False, errors]
-
-    if not available_tables or time() - available_tables[0] > 86400:
-        available_tables = time(), plot.available_tables(get_config()['datadir'])
 
     log.debug('settings to validate: {}'.format(settings))
 
@@ -239,7 +242,7 @@ def validate_settings(settings):
         # get permitted expression variables
         permitted_vars = None
         if 's' + n in settings:
-            for filename, dataset in available_tables[1].iteritems():
+            for filename, dataset in global_data.get_tables().iteritems():
                 if filename == settings['s' + n]:
                     permitted_vars = {}
                     # init dummy vars to 1
@@ -379,8 +382,8 @@ def validate_settings(settings):
 plot_lock = Lock()
 
 
-def make_plot(settings, config):
-    basename = 'plot{}'.format(hashargs(settings))
+def make_plot(settings, config, n=None):
+    basename = 'plot{}'.format(n if n else hashargs(settings))
     name = os.path.join(config['plotdir'], basename).replace('\\', '/')
 
     # try to get plot from cache
@@ -403,11 +406,10 @@ def random_chars(n):
 
 
 def handle_action(environ, start_response, config):
-    global available_tables
     fields = FieldStorage(fp=environ['wsgi.input'], environ=environ)
     action = fields.getfirst('a')
-    datadir = config['datadir']
     sessiondir = config['sessiondir']
+    protected_sessions = global_data.get_sessions()
 
     if action in ['plot', 'png', 'svg', 'pdf']:
 
@@ -434,25 +436,33 @@ def handle_action(environ, start_response, config):
         elif action in ['png', 'svg', 'pdf']:
             return serve_plot(images[action], start_response, config)
 
-
-
     elif action == 'list':
-        if not available_tables or time() - available_tables[0] > 86400:
-            available_tables = time(), plot.available_tables(datadir)
-        return serve_json(available_tables[1], start_response)
+        return serve_json(global_data.get_tables(), start_response)
 
     elif action == 'save':
         id = fields.getfirst('id').strip()
-        if len(id) < 8: raise RuntimeError('session id must have at least 8 digits')
+
+        if len(id) < 8:
+            raise RuntimeError('session id must have at least 8 digits')
+
+        # prevent write protected examples to be overwritten
+        if id in protected_sessions:
+            raise RuntimeError('this is a read only plot')
+
         data = fields.getfirst('data').strip()
+
         with open(os.path.join(sessiondir, '{}.session'.format(id)), 'w') as f:
             f.write(data.replace('},{', '},\n{'))
         return serve_json('saved {}'.format(id), start_response)
 
     elif action == 'load':
         id = fields.getfirst('id').strip()
-        if len(id) < 8: raise RuntimeError('session id must have at least 8 digits')
+        if len(id) < 8 and id not in protected_sessions:
+            raise RuntimeError('session id must have at least 8 digits')
         try:
+            # serve protected plots from dict
+            if id in protected_sessions:
+                return serve_plain(protected_sessions[id], start_response)
             with open(os.path.join(sessiondir, '{}.session'.format(id))) as f:
                 return serve_plain(f.read(), start_response)
         except:
@@ -460,7 +470,7 @@ def handle_action(environ, start_response, config):
 
     elif action == 'newid':
         id = random_chars(16)
-        while os.path.isfile(os.path.join(sessiondir, '{}.session'.format(id))):
+        while os.path.isfile(os.path.join(sessiondir, '{}.session'.format(id))) or id in protected_sessions:
             id = random_chars(16)
         return serve_plain(id, start_response)
 
