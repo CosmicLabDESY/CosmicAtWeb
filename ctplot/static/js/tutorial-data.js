@@ -29,7 +29,7 @@ ${[
             ['{{neumayer information}}', '{{neumayer url}}'],
             ['{{zeuthen weather information}}', '{{zeuthen weather url}}']
         ].map(
-            v => `<a target="_blank" href="${v[1]}">${v[0]}</a>`
+          ([information, url]) => `<a target="_blank" href="${url}">${information}</a>`
         ).join('')}</ul>`,
         task: '{{tut task 2}}',
         highlightSelector: 'select[name=experiment0]',
@@ -93,7 +93,7 @@ ${[
     },
     10: {
         headline: '{{tut head 10}}',
-        explanation: '{{tut expl 10}}',
+        explanation: '{{tut expl 10 %s <a href=\'https://physik-begreifen-zeuthen.desy.de/e2198/e203474/e203596/e204023/index_ger.html#e222540\' target=\'blank_\'>,</a>}}',
         task: '{{tut task 10}}',
         highlightSelector: '#plotImage'
     },
