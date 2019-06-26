@@ -21,7 +21,7 @@ from setuptools.command.build_py import build_py
 from pkg_resources import resource_string, resource_filename, require
 
 required_libs = ['matplotlib >=1.1', 'numpy >=0.9', 'scipy >=0.12', 'pytz', 'numexpr >=1.4',
-                 'tables >=2.2', 'python-dateutil >=1.5', 'Pillow >=3.1.0', 'basemap >=1.0', 'locket']
+                 'tables >=2.2', 'python-dateutil >=1.5', 'basemap >=1.0', 'locket']
 
 
 def readme(name):
