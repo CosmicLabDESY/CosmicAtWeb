@@ -86,9 +86,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 tablesAndVars = data;
 
                 experimentbox = $('<select>').attr('name', 'experiment*');
-                $('<option>').val('').text('(bitte Experiment auswählen)').appendTo(experimentbox);
+                $('<option>').val('').text('{{choose experiment placeholder}}').appendTo(experimentbox);
                 datasetbox = $('<select>').attr('name', 's*');
-                $('<option>').val('').text('(bitte Datensatz auswählen)').appendTo(datasetbox);
+                $('<option>').val('').text('{{choose data set placeholder}}').appendTo(datasetbox);
 
                 $.each(data, function(id, info) {
                     // console.debug(id+' -- '+info);
@@ -125,11 +125,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         });
 
         var experimentlabel = $('<label>').addClass('required')
-          .attr('data-help', 'Hier wird der zu verwendende Experiment ausgewählt.')
+          .attr('data-help', '{{choose experiment help}}')
           .append('Experiment').append(experimentbox);
         var datasetlabel = $('<label>').addClass('required')
-          .attr('data-help', 'Hier wird der zu verwendende Datensatz ausgewählt.')
-          .append('Datensatz').append(datasetbox);
+          .attr('data-help', '{{choose data set help}}')
+          .append('{{data set}}').append(datasetbox);
         return $('<div class="datasetselector">').append(experimentlabel).append(datasetlabel);
     }
 
@@ -140,7 +140,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         ch.each(function(i) {
             var plot = $(this);
-            plot.find('legend').text((i + 1) + '. Datenreihe');
+            plot.find('legend').text((i + 1) + '. Data Array');
             plot.find('[name]').each(function() {
                 var e = $(this);
 
@@ -309,8 +309,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         plot.find(':input[name$="color"]').each(function() {
             var input = $(this),
                 parent = input.parent(),
-                picker = $('<div class="colorselector"><div></div></div>')
-                    .attr('title', parent.data('help'));
+                picker = $('<div class="colorselector"><div></div></div>').attr('title', parent.data('help'));
 
             // remove cloned selector
             parent.find('.colorselector').remove();
@@ -461,7 +460,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 $('nav a[href="#settings"]').click();
                 setSettings(s);
             } catch (e) {
-                alert('Fehler beim Laden der Einstellungen: ' + e);
+                alert('{{error loading the settings}}:' + e);
             }
         });
     }
@@ -479,7 +478,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
          * add it after the diagram name, which is the first label 
          * inside the container */
         $('.plot label:first').after(sourcesBox());
-        // detach the plot template (to be added by pressing 'add plot' button)
+        // detach the plot template (to be added by pressing 'add plot'button)
         templatePlot = $('.plot').detach();
 
         $('#varsbox').hide();
@@ -608,7 +607,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             var id = $('#sessionid').val();
             
             if (id.length < 8) {
-                alert('Die Session-ID muss mindestens 8 Zeichen lang sein.');
+                alert('{{session id too short error}}');
                 return;
             }
 
@@ -688,20 +687,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             maxWidth : '90%',
             maxHeight : '90%',
             rel : 'plots',
-            title : 'gespeichertes Diagramm'
+            title : '{{saved diagram}}'
         });
     }
 
     function addPlotToSaved(settings) {
         console.debug('* add plot to saved');
         var plotImg = $('<img src="' + settings.url + '" href="' + settings.url + '" title="' + settings.t + '" class="savedPlotImage">'),
-            delBtn = $('<i class="del-btn inverse"></i>').attr('title', 'Diagramm löschen'),
+            delBtn = $('<i class="del-btn inverse"></i>').attr('title', '{{delete plot}}'),
             loadBtn = $('<i class="fa fa-repeat fa-2x icon-green"></i>').attr('title', 'Plot laden'),
             btnContainer = $('<span class="btns">');
 
         delBtn.addClass('delete').click(function() {
             var container = $(this).closest('div');
-            container.animate({ 'opacity' : 0, 'width': 0, 'padding': 0 }, 500, function () {
+            container.animate({ 'opacity' : 0, 'width': 0, 'padding': 0}, 500, function () {
                 container.remove();
                 bindColorbox();
                 savePlots();
@@ -715,7 +714,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             $('.plot').find('.delplot').click();
             setSettings(plot.data('settings'));
             $('form').submit();
-        })
+        });
         
         plotImg.addClass('savedplot').data('settings', settings);
 
@@ -771,7 +770,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             result = $('#result');
             
             // print status information
-            result.empty().append('<p class="text-centered">Diagramm wird erstellt, bitte warten&hellip;<br /><br /><img src="img/bar90.gif"></p>');
+            result.empty().append('<p class="text-centered">{{diagram beeing generated}}&hellip;<br /><br /><img src="img/bar90.gif"></p>');
             $('#error').empty();
 
             // scroll to plot section
@@ -787,7 +786,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             errorList = $('<ul>');
 
                         if (errors.global.length > 0) {
-                            errorBox.html('<h3>Es sind Fehler aufgetreten:</h3>');
+                            errorBox.html('<h3>{{an error occurred}}</h3>');
                             $.each(errors.global, function(_, msg) {
                                 errorList.append('<li>' + msg + '</li>');
                             });
@@ -800,7 +799,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     return;
 
                                 var dataset = parseInt(dataset) + 1,
-                                    heading = $('<h3>Fehler in der ' + dataset + '. Datenreihe:</h3>');
+                                    heading = $('<h3>{{error in data set number}} ' + dataset + ':</h3>');
 
                                 errorList = $('<ul>');
                                 $.each(dsErrors, function(_, msg) {
@@ -833,9 +832,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     /* container for saveButton and image links */
                     container = $('<fieldset class="actions">').appendTo(result);
-                    $('<legend>Diagramm</legend>').appendTo(container);
+                    $('<legend>{{diagram}}</legend>').appendTo(container);
                     left = $('<div class="left">').appendTo(container);
-                    left.append('Diagramm herunterladen als:');
+                    left.append('{{save diagram as}}:');
                     right = $('<div class="right">').appendTo(container);
                     list = $('<ul id="downloadButtons">').appendTo(left);
                     el = $('<li>').appendTo(list);
@@ -865,9 +864,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     // save plot button
                     saveButton = $('<button>').attr('type', 'button')
                         .addClass('btn')
-                        .attr('title', 'Zu gespeicherten Diagrammen hinzufügen')
+                        .attr('title', '{{add to saved diagrams}}')
                         .attr('id', 'savePlotButton')
-                        .text(' Zu gespeicherten Diagrammen hinzufügen')
+                        .text('{{add to saved diagrams}}')
                         .prepend('<i class="fa fa-save"></i>');
                     
                     saveButton.click(function () {
@@ -881,15 +880,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     // $('<img>').attr('src', 'img/disk.png').prependTo(saveButton);
 
                     // plot settings
-                    container.append('<h2>Einstellungen dieses Diagramms</h2>');
-                    container.append('<p>Um dieses Diagramm in eine andere Session zu importieren, speichere die folgenden Einstellungen und lade sie in <a class="scrollto" href="#loadsettings">die andere Session</a>.</p>');
+                    container.append('<h2>{{settings of this diagram}}</h2>');
+                    container.append('<p>{{export to another session explanation % <a class="scrollto" href="#loadsettings">,</a>}}</p>');
                     jsonSettings = JSON.stringify(settings);
                     p = $('<p>').appendTo(container);
                     $('<textarea id="plotsettings">').text(jsonSettings).appendTo(p);
 
                     // plot url
-                    container.append('<h2>Dieses Diagramm auf einer Webseite einbinden</h2>');
-                    container.append('<p>Der folgende HTML-Code kann benutzt werden um das Diagramm auf einer Webseite einzubinden.</p>');
+                    container.append('<h2>{{embed into website}}</h2>');
+                    container.append('<p>{{embed into website explanation}}</p>');
                     // strip stuff like /index.html from current url and append plot url
                     var currentUrl = window.location.href;
                     plotUrl = currentUrl.substr(0, currentUrl.lastIndexOf('/')) + '/plot?' + query.replace(/a=plot/, 'a=png');
@@ -908,7 +907,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 },
                 error : function(xhr, text, error) {
                     var errorbox = $('<div class="errorbox">');
-                    errorbox.html('<p>Es ist ein unbekannter Fehler aufgetreten. Bitte überprüfe deine Eingaben und versuche es erneut.</p>');
+                    errorbox.html('<p>{{undefined error}}</p>');
 
                     $('#result').empty();
                     $('#error').html(errorbox);
